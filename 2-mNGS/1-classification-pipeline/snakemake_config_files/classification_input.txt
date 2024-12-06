@@ -1,0 +1,21 @@
+# Sample	r1	r2
+C10	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C10_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C10_2.fq.gz
+S3	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S3_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S3_2.fq.gz
+S5	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S5_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S5_2.fq.gz
+S1	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S1_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S1_2.fq.gz
+S10	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S10_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S10_2.fq.gz
+C7	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C7_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C7_2.fq.gz
+C3	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C3_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C3_2.fq.gz
+S9	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S9_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S9_2.fq.gz
+C2	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C2_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C2_2.fq.gz
+C8	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C8_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C8_2.fq.gz
+S7	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S7_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S7_2.fq.gz
+C9	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C9_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C9_2.fq.gz
+S6	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S6_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S6_2.fq.gz
+S8	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S8_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S8_2.fq.gz
+C1	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C1_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C1_2.fq.gz
+C5	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C5_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C5_2.fq.gz
+S2	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S2_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S2_2.fq.gz
+S4	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S4_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/S4_2.fq.gz
+C4	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C4_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C4_2.fq.gz
+C6	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C6_1.fq.gz	<path_to_git_directory>/cradle-metagenomic-classification/preprocessing/01_processing/05_sync/C6_2.fq.gz

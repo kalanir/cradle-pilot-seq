@@ -1,0 +1,8 @@
+.Rproj.user
+*.Rhistory
+*.RData
+*.Ruserdata
+*.Rout
+*.DS_Store
+*.Rproj
+save_data_box_to_github.R
