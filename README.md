@@ -8,9 +8,6 @@ In low-income countries, inadequate housing (e.g., soil floors) and animal cohab
 To run the scripts, the data directory for the user must be changed in **`0-config.R`**. This will allow for replication of study findings using scripts in this repository. Similarly, directory statement changes will be needed wherever output files are saved down. In particular, raw fastq data will need to be downloaded from NCBI Bioproject: PRJNA1130536, thereby paths must be inputed in `2-download-rawdata.sh`. We will update this once the project becomes public.
 
 ## Directory structure
-
-**`0-analysis-bash.sh` :** bash script, replicates the entire projectfdsa`
-
 **`0-config.R` :** configuration file that sets data directories, sources base functions, and loads required libraries
 
 **`1-dm` :** folder containing data management scripts. To rerun all scripts in this subdirectory, run the bash script `0-run-dm.sh`.    
