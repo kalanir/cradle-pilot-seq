@@ -3,22 +3,57 @@
 
 # Visualization of processed sequencing AMR 
 # data from 2023 environmental pilot
+
+# Plot ARG risk heatmap
 #######################################
 rm(list=ls())
-
-source(paste0(here::here(), "/0-config.R"))
-library(RColorBrewer)
-library(circlize)
-library(leaflet)
-library(ComplexHeatmap)
+library(readxl)
 library(ggh4x)
+source(paste0(here::here(), "/0-config.R"))
 
-# read in data
+## download supp file from Zhang et al., 2022 https://doi-org.stanford.idm.oclc.org/10.1038/s41467-022-29283-8
+download.file('https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-022-29283-8/MediaObjects/41467_2022_29283_MOESM13_ESM.xlsx', destfile = paste0(data_dir,"Zhang 2022 supplement data 10.xlsx"), method = "wget")
+zhang = read_excel(paste0(data_dir,"Zhang 2022 supplement data 10.xlsx"))
+
+zhang = zhang %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "Nocardia rifampin resistant beta-subunit of RNA polymerase (rpoB2)", "rpoB2", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "tetQ", "tet(Q)", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "tetW", "tet(W)", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "Bifidobacterium adolescentis rpoB conferring resistance to rifampicin", "rpoB", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "AAC(6')-Ie-APH(2'')-Ia", "AAC(6')-Ie-APH(2'')-Ia bifunctional protein", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "tetO", "tet(O)", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "tet32", "tet(32)", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "Bifidobacteria intrinsic ileS conferring resistance to mupirocin", "ileS", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "mexK", "MexK", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "tet44", "tet(44)", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "mexW", "MexW", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "Tet(X4)", "tet(X4)", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "acrF", "AcrF", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "yojI", "YojI", `ARO Term`)) %>%
+  mutate(`ARO Term` = ifelse(`ARO Term` == "mexI", "MexI", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanWB", "vanW gene in vanB cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanWI", "vanW gene in vanI cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanYA", "vanY gene in vanA cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanYB", "vanY gene in vanB cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanYF", "vanY gene in vanF cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanYG", "vanY gene in vanG cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanYM", "vanY gene in vanM cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanWG", "vanW gene in vanG cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanTG", "vanT gene in vanG cluster", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "tolC", "TolC", `ARO Term`)) %>%  
+  mutate(`ARO Term` = ifelse(`ARO Term` == "vanRO", "vanR gene in vanO cluster", `ARO Term`)) 
+
 AMR_gene_data = readRDS(paste0(data_dir, 
-                               "CZ_processed_data/AMR/AMR_data_filtered.RDS"))
+                               "CZ_processed_data/AMR/AMR_data_filtered.RDS")) 
+
+merged = left_join(AMR_gene_data, zhang, by = c("gene" ="ARO Term"))
+table(is.na(merged$Rank))
+
+table(merged$Rank, merged$sample_id)
+
 
 # gene heatmap ------------------------------------------------------------------
-AMR_gene_data = AMR_gene_data %>% 
+plot_data = merged %>% 
   mutate(gene = as.character(gene)) %>% 
   mutate(gene = ifelse(gene=="vanY gene in vanM cluster","vanYM",gene)) %>% 
   mutate(gene = ifelse(gene=="vanY gene in vanG cluster","vanYG",gene)) %>% 
@@ -69,15 +104,22 @@ AMR_gene_data = AMR_gene_data %>%
     "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"
   ))) %>% 
   mutate(sample_type = ifelse(sample_type=="cow", "Cow dung", "Soil floor")) %>% 
-  
-  mutate(gene = as.factor(gene))  
-# mutate(gene = fct_rev(gene))
+  mutate(gene = as.factor(gene))   %>% 
+  mutate(Rank = as.character(Rank)) %>% 
+  mutate(Rank = case_when(
+    Rank == "RI=0" ~ "Risk index=0",
+    Rank == "Q4" ~ "Quartile 4",
+    Rank == "Q3" ~ "Quartile 3",
+    Rank == "Q2" ~ "Quartile 2",
+    Rank == "Q1" ~ "Quartile 1")) %>% 
+  filter(!is.na(Rank))
 
-pdf(paste0(figure_path, "fig-AMR-heatmap-rev.pdf"), width=7, height=12)
-# pdf(paste0(figure_path, "fig-AMR-heatmap-rev.pdf"), width=6.5, height=8)
-ggplot(AMR_gene_data, aes(x = sample_id, y = gene)) + 
-  geom_tile(aes(fill=cutoff_cat), col="black") + 
-  scale_fill_manual("Highest\nalignment\nconfidence", values = c("#154696","#6c8ec4","#c6d9f7","#29ab36")) + 
+
+
+pdf(paste0(figure_path, "fig-AMR-heatmap-risk.pdf"), width=7, height=10.5)
+ggplot(plot_data, aes(x = sample_id, y = gene)) + 
+  geom_tile(aes(fill=Rank), col="black") + 
+  scale_fill_manual("ARG Risk", values = c("#e63946","#ff794c","#ffbf5e","#ffeeba","grey")) +
   facet_grid2(drug_class_cat ~ sample_type, scales="free", space="free_y",
               strip = strip_themed(
                 background_x = elem_list_rect(fill = c("grey", "#8a4811"))
@@ -95,24 +137,4 @@ ggplot(AMR_gene_data, aes(x = sample_id, y = gene)) +
     strip.background = element_rect(color="black")
   )
 dev.off()
-
-
-
-# description in text
-AMR_gene_data %>% group_by(sample_type, drug_class, gene) %>% 
-  summarize(n = n(), .groups = "drop") %>% 
-  filter(n > 4) %>% 
-  arrange(sample_type, desc(n)) %>% 
-  filter(sample_type=="Cow dung") %>% 
-  select(drug_class) %>% 
-  distinct()
-
-AMR_gene_data %>% group_by(sample_type, drug_class, gene) %>% 
-  summarize(n = n(), .groups = "drop") %>% 
-  filter(n > 4) %>% 
-  arrange(sample_type, desc(n)) %>% 
-  filter(sample_type=="Soil floor") %>% 
-  select(drug_class) %>% 
-  distinct()
-
 

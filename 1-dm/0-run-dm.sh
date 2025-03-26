@@ -2,4 +2,3 @@
 
 R CMD BATCH 1-extract_czi_pathogen_list.R
 sh 2-download-rawdata.sh
-sh 3-download-reference-genome.sh

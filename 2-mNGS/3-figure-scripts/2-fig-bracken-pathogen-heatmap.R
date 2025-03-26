@@ -1,8 +1,9 @@
 #######################################
 # CRADLE trial
 
-# Heatmap of pathogens by sample 
-# 2023 environmental pilot
+# Visualization of processed sequencing data from 
+# 2025 environmental pilot
+
 #######################################
 rm(list=ls())
 
@@ -19,10 +20,7 @@ select <- dplyr::select
 summarize <- dplyr::summarize
 
 # Read in processed data ------------------------------------------------------
-species_percent = readRDS(paste0(data_dir, "Bracken_processed_data/filtered_pathogens/pathogen_species_percentages.RDS"))
-rownames(species_percent) = species_percent$name 
-species_percent = species_percent[,-c(1:2)]
-
+species_percent = readRDS(paste0(data_dir, "Bracken_processed_data/filtered_pathogens_contigs/pathogen_species_percentages.RDS"))
 species_percent = species_percent %>% as.data.frame()%>% 
   rownames_to_column(var = "species") %>% 
   pivot_longer(-species, names_to = "sample_name", values_to = "percent") %>% 
@@ -38,23 +36,26 @@ species_mean_percent <- species_percent %>%
   group_by(species) %>%
   dplyr::summarize(mean_percent = mean(percent))
 
-# Create histogram with bins of 0.5 increments
-hist(species_mean_percent$mean_percent, 
-     breaks = seq(floor(min(species_mean_percent$mean_percent)), 
-                  ceiling(max(species_mean_percent$mean_percent)), 
-                  by = 0.5), 
-     main = "Histogram of Species Mean Percentages", 
-     xlab = "Mean Percent", 
-     ylab = "Frequency")
-
 species_mean_percent <- species_mean_percent %>% 
-  filter(mean_percent > 0.5) %>%
+  filter(mean_percent > 2) %>%
   pull(species)
 
+# identify species in at least 5 samples per sample type
+common_species <- species_percent %>% 
+  filter(species %in% species_mean_percent) %>% 
+  filter(percent>0) %>% 
+  group_by(species, sample_type,sample_id) %>%
+  dplyr::summarize(n = n()) %>%
+  group_by(species, sample_type) %>% 
+  dplyr::summarize(n = n()) %>%
+  pivot_wider(names_from = sample_type, values_from = n) %>%
+  filter(Cow >= 5 & Soil>=5) %>%
+  pull(species)
 
 # Make heatmap ----------------------------------------------------------------
 heatmap_matrix = species_percent %>%
   filter(species %in% species_mean_percent) %>% 
+  filter(species %in% common_species) %>% 
   pivot_wider(values_from = percent, names_from = species, values_fill = 0, id_cols = sample_id)
 
 ## Define the correct sample order
@@ -73,6 +74,7 @@ heatmap_matrix = heatmap_matrix + 1
 
 ## Log transform data & define a log scale for visualization
 log_heatmap_matrix = log10(heatmap_matrix)
+# log_heatmap_matrix = round(log_heatmap_matrix, 1)
 
 # Define the range for the breaks
 min_val <- min(log_heatmap_matrix[log_heatmap_matrix > 0], na.rm = TRUE)
@@ -88,8 +90,8 @@ log_scale_norm_transform <- round(log_scale_norm_transform, 1)
 col_fun = colorRamp2(c(0, log_scale[1]-1e-6, log_scale[1:7]), 
                      c("#e8e8e8", "#e8e8e8", "#FED976", "#FEB24C", "#FD8D3C", 
                        "#FC4E2A", "#E31A1C", "#B10026", "#730000"))
-
-pdf(paste0(figure_path, "fig-bracken-pathogen-heatmap.pdf"), width = 6, height = 6.5)
+# "#E31A1C", "#FEB24C",
+pdf(paste0(figure_path, "fig-bracken-pathogen-heatmap-tropmed.pdf"), width = 6, height = 2.5)
 
 ## Run the heatmap
 Heatmap(log_heatmap_matrix,
@@ -112,14 +114,14 @@ Heatmap(log_heatmap_matrix,
         column_names_gp = gpar(fontsize = 9),
         col = col_fun,
         heatmap_legend_param = list(title = "Relative\nAbundance (%)",
-                                    labels = c("Not detected ", log_scale_norm_transform),
-                                    at = c(0, log_scale[1:7]),
+                                    labels = c("Not detected", log_scale_norm_transform),
+                                    at = c(0, log_scale[1:n_breaks]),
                                     title_gp = gpar(fontsize = 8),
                                     labels_gp = gpar(fontsize = 8),
                                     legend_height = unit(5, "cm"),
                                     grid_width = unit(0.3, "cm"),
                                     break_dist = c(rep(1, length(log_scale)))
-                                    ))
+        ))
 
 dev.off()
 

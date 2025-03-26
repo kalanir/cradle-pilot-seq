@@ -1,5 +1,7 @@
-# Adapted from a public workflow by Ben Siranosian (bsiranosian@gmail.com) - Bhatt lab - Stanford Genetics
-# https://github.com/bhattlab/kraken2_classification
+# Processing kraken results into matrices and plots
+# Ben Siranosian - Bhatt lab - Stanford Genetics
+# bsiranosian@gmail.com
+# January 2019 - June 2023
 proj_dir = paste0(here::here(),"/")
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(rafalib, quietly = TRUE, warn.conflicts = FALSE))
@@ -17,11 +19,11 @@ select = dplyr::select
 options(stringsAsFactors = F)
 
 # options we need from snakemake
-sample_reads_file <- paste0(proj_dir,'/cradle-metagenomic-classification/preprocessing/01_processing/classification_input.txt')
-sample_groups_file <- paste0(proj_dir,'/cradle-metagenomic-classification/preprocessing/01_processing/sample_groups.tsv')
-workflow.outdir <-  paste0(proj_dir,'/cradle-metagenomic-classification/')
+sample_reads_file <- paste0(proj_dir,'2-mNGS/1-classification-pipeline/snakemake_config_files/classification_input.txt')
+sample_groups_file <- paste0(proj_dir,'2-mNGS/1-classification-pipeline/snakemake_config_files/sample_groups.tsv')
+workflow.outdir <-  proj_dir
 
-result.dir <-  paste0(proj_dir,'/cradle-metagenomic-classification/results')
+result.dir <-  paste0(proj_dir,'results/')
 use.bracken.report <- TRUE
 classification_method = ifelse(use.bracken.report, "bracken", "kraken")
 if (classification_method == "kraken") {
@@ -178,12 +180,14 @@ extract_taxid = function(classified_list){
     select(name, taxid, everything())
 }
 
+
 saveRDS(kgct.filtered.classified.list$species %>% extract_taxid(), 
-        here::here("output", "all", classification_method, "species_counts.RDS"))
+        here::here("data","Bracken_processed_data", "contigs","/species_counts.RDS"))
 saveRDS(kgct.filtered.classified.list$genus %>% extract_taxid(), 
-        here::here("output", "all", classification_method, "genus_counts.RDS"))
+        here::here("data","Bracken_processed_data", "contigs","/genus_counts.RDS"))
 
 saveRDS(kgct.filtered.classified.percentage.list$species %>% extract_taxid(), 
-        here::here("output", "all", classification_method, "species_classified_percentages.RDS"))
+        here::here("data","Bracken_processed_data", "contigs","/species_classified_percentages.RDS"))
 saveRDS(kgct.filtered.classified.percentage.list$genus %>% extract_taxid(), 
-        here::here("output", "all", classification_method, "genus_classified_percentages.RDS"))
+        here::here("data","Bracken_processed_data", "contigs","/genus_classified_percentages.RDS"))
+
