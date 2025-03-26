@@ -1,6 +1,6 @@
 #######################################
 # CRADLE trial
-# 2023 environmental pilot
+# 202 environmental pilot
 
 # Sequencing analysis
 # Relative abundance plot
@@ -10,14 +10,12 @@ rm(list=ls())
 source(paste0(here::here(), "/0-config.R"))
 library(RColorBrewer)
 library(Polychrome)
-# remotes::install_github("KarstensLab/microshades")
+#remotes::install_github("KarstensLab/microshades")
 library(microshades)
 library(readxl)
 
 # Read in processed metagenomics data
-species_percent = readRDS(paste0(data_dir, "/Bracken_processed_data/filtered_pathogens/pathogen_species_percentages.RDS"))
-rownames(species_percent) = species_percent$name
-species_percent = species_percent[,-c(1:2)]
+species_percent = readRDS(paste0(data_dir, "Bracken_processed_data/filtered_pathogens_contigs/pathogen_species_percentages.RDS"))
 species_percent = species_percent %>% as.data.frame()%>% 
   rownames_to_column(var = "species") %>% 
   pivot_longer(-species, names_to = "sample_name", values_to = "percent") %>% 
@@ -60,7 +58,7 @@ multiple_color_df = species_plot_df %>% filter(genus_name %in% genus_names_multi
   group_by(genus_name, species) %>% dplyr::summarize(count = n())
 
 ## manually assign hex values from microshades palette for those that have multiple species based on counts in genus_names_multiple
-microshades_values <-c(microshades_palette("micro_green", n = 2, lightest = F), 
+microshades_values <-c(microshades_palette("micro_green", n = 3, lightest = F), 
                        microshades_palette("micro_blue", n = 2, lightest = F), 
                        microshades_palette("micro_purple", n = 2, lightest = F),
                        microshades_palette("micro_brown", n = 2, lightest = F),
@@ -111,8 +109,8 @@ genus_order = species_plot_df2 %>% filter(!species == 'Other') %>% pull(species)
   as.vector() %>% unique() %>% sort()
 species_plot_df2 = species_plot_df2 %>% mutate(species = factor(species, levels = c(genus_order, "Other")))
 
-ggplot(species_plot_df2, aes(x = sample_id, y = percent, fill = sample_type, 
-                           group = sample_id_no)) + 
+plot_species <- ggplot(species_plot_df2, aes(x = sample_id, y = percent, fill = sample_type, 
+                                             group = sample_id_no)) + 
   geom_bar(aes(fill = species), stat = "identity", position="fill", col="black") + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
   scale_fill_manual(values = colors) +
@@ -120,7 +118,8 @@ ggplot(species_plot_df2, aes(x = sample_id, y = percent, fill = sample_type,
                      labels = c(0, 25, 50, 75, 100)) + 
   labs(x = "Sample ID", y = "Relative abundance (%)", fill = "Taxon") + 
   facet_grid(~sample_id_no, scales = "free") +
-  theme_minimal() +
+  theme_minimal()+
+  ggtitle("b)") +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         panel.grid.major = element_blank(),
@@ -128,10 +127,8 @@ ggplot(species_plot_df2, aes(x = sample_id, y = percent, fill = sample_type,
         strip.text.x = element_blank(),
         axis.title.x = element_blank(),
         axis.text = element_text(size = 12, color ="black"),
-        axis.title.y = element_text(size=14, color="black")) 
-
-ggsave(filename = paste0(figure_path, "fig-bracken-rel-abundance-species.pdf"), 
-       width = 10.2, height = 6, dpi = 300)
+        axis.title.y = element_text(size=14, color="black"),
+        plot.title = element_text(size=18)) 
 
 # Make genus plot using only genera from top 30 species ------------------------
 genus_plot_df <- species_plot_df2 %>%
@@ -155,8 +152,8 @@ genus_order = genus_plot_df2 %>% filter(!genus_name == 'Other') %>% pull(genus_n
 genus_plot_df2 = genus_plot_df2 %>% 
   mutate(genus_name = factor(genus_name, levels = c(genus_order, "Other")))
 
-ggplot(genus_plot_df2, aes(x = sample_id, y = percent, fill = sample_type, 
-                           group = sample_id_no)) + 
+plot_genus <- ggplot(genus_plot_df2, aes(x = sample_id, y = percent, fill = sample_type, 
+                                         group = sample_id_no)) + 
   geom_bar(aes(fill = genus_name), stat = "identity", position="fill", col="black") + 
   facet_grid(~sample_id_no, scales = "free") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
@@ -165,6 +162,7 @@ ggplot(genus_plot_df2, aes(x = sample_id, y = percent, fill = sample_type,
                      labels = c(0, 25, 50, 75, 100)) + 
   labs(x = "Sample ID", y = "Relative abundance (%)", fill = "Genus") + 
   theme_minimal() +
+  ggtitle("a)") +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         panel.grid.major = element_blank(),
@@ -172,12 +170,13 @@ ggplot(genus_plot_df2, aes(x = sample_id, y = percent, fill = sample_type,
         strip.text.x = element_blank(),
         axis.title.x = element_blank(),
         axis.text = element_text(size = 12, color ="black"),
-        axis.title.y = element_text(size=14, color="black")) 
+        axis.title.y = element_text(size=14, color="black"),
+        plot.title = element_text(size=18))
 
 
-ggsave(filename = paste0(figure_path, "fig-bracken-rel-abundance-genus.pdf"), 
-       width = 10.2, height = 6, dpi = 300)
+plot_both <- grid.arrange(plot_genus, plot_species, ncol=1)
 
-
+ggsave(plot_both, filename = paste0(figure_path, "fig-bracken-rel-abundance.pdf"), 
+       width = 10.2, height = 12.5, dpi = 300)
 
 

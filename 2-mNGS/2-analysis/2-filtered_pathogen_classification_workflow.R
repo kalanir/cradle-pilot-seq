@@ -1,5 +1,7 @@
-# Adapted from a public workflow by Ben Siranosian (bsiranosian@gmail.com) - Bhatt lab - Stanford Genetics
-# https://github.com/bhattlab/kraken2_classification
+# Processing kraken results into matrices and plots
+# Ben Siranosian - Bhatt lab - Stanford Genetics
+# bsiranosian@gmail.com
+# January 2019 - June 2023
 proj_dir = paste0(here::here(),"/")
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(rafalib, quietly = TRUE, warn.conflicts = FALSE))
@@ -18,11 +20,12 @@ options(stringsAsFactors = F)
 
 
 # options we need from snakemake
-sample_reads_file <- paste0(proj_dir,'/cradle-metagenomic-classification/preprocessing/01_processing/classification_input.txt')
-sample_groups_file <- paste0(proj_dir,'/cradle-metagenomic-classification/preprocessing/01_processing/sample_groups.tsv')
-workflow.outdir <-  paste0(proj_dir,'/cradle-metagenomic-classification/')
+sample_reads_file <- paste0(proj_dir,'2-mNGS/1-classification-pipeline/snakemake_config_files/classification_input.txt')
+sample_groups_file <- paste0(proj_dir,'2-mNGS/1-classification-pipeline/snakemake_config_files/sample_groups.tsv')
+workflow.outdir <-  proj_dir
 
-result.dir <-  paste0(proj_dir,'/cradle-metagenomic-classification/results')
+result.dir <-  paste0(proj_dir,'results/')
+
 use.bracken.report <- TRUE
 classification_method = ifelse(use.bracken.report, "bracken", "kraken")
 if (classification_method == "kraken") {
@@ -107,7 +110,7 @@ colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'o
 tax.array <- tax.array[!duplicated(tax.array$taxid),]
 
 # Get tax array for known pathogens
-czi_pathogen_list = read.csv("czi_pathogen_list.csv") %>% 
+czi_pathogen_list = read.csv(paste0(proj_dir,"data/czi_pathogen_list.csv")) %>% 
   dplyr::filter(!is.na(tax_id)) %>% 
   dplyr::select(taxid = tax_id)
 
@@ -198,8 +201,14 @@ kgct.filtered.classified.list <- lapply(kgct.filtered.list, function(x) subset_g
 kgct.filtered.percentage.list <- lapply(kgct.filtered.list, function(x) normalize_kgct(x, min_otu_percentage=min_otu_percentage))
 kgct.filtered.classified.percentage.list <- lapply(kgct.filtered.classified.list, function(x) normalize_kgct(x, min_otu_percentage=min_otu_percentage))
 
-saveRDS(kgct.filtered.classified.list$species@mat, here::here("output", "filtered_pathogens", "pathogen_species_counts.RDS"))
-saveRDS(kgct.filtered.classified.list$genus@mat, here::here("output", "filtered_pathogens", "pathogen_genus_counts.RDS"))
 
-saveRDS(kgct.filtered.classified.percentage.list$species@mat, here::here("output", "filtered_pathogens", "pathogen_species_percentages.RDS"))
-saveRDS(kgct.filtered.classified.percentage.list$genus@mat, here::here("output", "filtered_pathogens", "pathogen_genus_percentages.RDS"))
+saveRDS(kgct.filtered.classified.list$species@mat, 
+        here::here("data","Bracken_processed_data", "filtered_pathogens_contigs", "/pathogen_species_counts.RDS"))
+saveRDS(kgct.filtered.classified.list$genus@mat, 
+        here::here("data","Bracken_processed_data", "filtered_pathogens_contigs", "/pathogen_genus_counts.RDS"))
+
+saveRDS(kgct.filtered.classified.percentage.list$species@mat,  
+        here::here("data","Bracken_processed_data", "filtered_pathogens_contigs", "/pathogen_species_percentages.RDS"))
+saveRDS(kgct.filtered.classified.percentage.list$genus@mat, 
+        here::here("data","Bracken_processed_data", "filtered_pathogens_contigs", "/pathogen_genus_percentages.RDS"))
+

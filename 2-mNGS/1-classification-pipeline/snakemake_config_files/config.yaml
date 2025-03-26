@@ -1,20 +1,19 @@
-# Adapted from a public workflow by Ben Siranosian (bsiranosian@gmail.com) - Bhatt lab - Stanford Genetics
-# https://github.com/bhattlab/kraken2_classification
-
 # Specify sample names and read files
 ## tab-delimited table with three columns, see manual/usage.md
 ##    sample_name  read1_file  [read2_file]
 ##    if paired end, all samples must be paired end
 ##    if single end, all samples must be single end
 ## If this file is specified, sample_reports_file must not be specified.
-sample_reads_file: '/home/groups/jadebc/cradle-pilot-seq/4-classification-pipeline/snakemake_config_files/classification_input.txt'
+sample_reads_file: '<path_to_git_directory>/cradle-pilot-seq/2-mNGS/1-classification-pipeline/snakemake_config_files/classification_input_contigs.txt'
 # Specify file containing sample groups.
 ## Tab delimited with two columns, see manual/downstream_plotting.md
 ## If empty string specified, all samples will be treated as one group.
-sample_groups_file: '/home/groups/jadebc/cradle-pilot-seq/4-classification-pipeline/snakemake_config_files/sample_groups.tsv'
+sample_groups_file: '<path_to_git_directory>/cradle-pilot-seq/2-mNGS/1-classification-pipeline/snakemake_config_files/sample_groups.tsv'
+
+sample_reports_file: ''
 
 # Output base directory - will contain subfolders for reports, plots, etc
-outdir: '/home/groups/jadebc/cradle-pilot-seq/'
+outdir: '<path_to_git_directory>/cradle-pilot-seq/'
 
 # Do Bracken calculations and use the results in downstream processing?
 run_bracken: True
@@ -22,11 +21,15 @@ run_bracken: True
 # Read length of the input data
 ## Used in the Bracken species reestimation. You must have a Bracken database built with this length
 read_length: 150
+bracken_threshold: 1
 
 # Confidence threshold: a recently introduced feature for Kraken
 ## Increase this to reduce false positives for Kraken
 ## Maximum 1.0
 confidence_threshold: 0.0
+
+
+
 
 # Taxonomic level for Bracken results.
 ## Currently, only "S" is supported.
@@ -34,7 +37,7 @@ taxonomic_level: S
 
 # Database
 ## Must contain a Kraken2 and Bracken database
-database: '/home/groups/jadebc/public/kraken-databases/k2_pluspf_20240112/'
+database: '<path_to_git_directory>/kraken-databases/k2_pluspf_20240112/'
 
 ######### Downstream processing options ###################
 # Downstream processing for filtering OTUs
