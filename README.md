@@ -3,6 +3,8 @@
 ## Overview
 In low-income countries, inadequate housing (e.g., soil floors) and animal cohabitation may expose children to fecal organisms, increasing their risk of enteric and antimicrobial-resistant infections. Our objective was to understand whether cow cohabitation in homes with soil floors in rural Bangladesh contributed to pathogen and antimicrobial resistance genes (ARGs) in the home. Here, across 10 randomly selected households in rural Sirajganj District, we performed shotgun metagenomic sequencing of sampled floor soil and cow dung, and analyzed resulting sequencing data for pathogens and ARGs. 
 
+**Publication Available:** [PMID40422288](https://doi-org.stanford.idm.oclc.org/10.1128/aem.00669-25)<br>
+**Data Publically Available:** [PRJNA1130536](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1130536/)
 
 ## Additional Information
 To run the scripts, the data directory for the user must be changed in **`0-config.R`**. This will allow for replication of study findings using scripts in this repository. Similarly, directory statement changes will be needed wherever output files are saved down. In particular, raw fastq data will need to be downloaded from NCBI Bioproject: PRJNA1130536, thereby paths must be inputed in `2-download-rawdata.sh`. We will update this once the project becomes public.
